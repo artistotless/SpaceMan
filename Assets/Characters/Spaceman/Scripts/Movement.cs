@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Experimental.U2D.IK;
+
 
 public class Movement : MonoBehaviour
 
@@ -10,11 +10,6 @@ public class Movement : MonoBehaviour
     [Range(200, 10000.0f)] [SerializeField] public float jumpPower;
     [Range(1, 100.0f)] public float speedFall;
     Vector2 velocity;
-    public CCDSolver2D solver;
-    public Transform testtarget;
-    [Range(0, 100)]   int iterations;
-    [Range(0, 100.0f)]  float velocityIK;
-    [Range(0, 100.0f)]   float tolerance;
 
     Collider2D[] colliders;
     public Transform groundCheckPoint;
@@ -31,9 +26,7 @@ public class Movement : MonoBehaviour
     {
         
         CheckJumping();
-        solver.iterations = iterations;
-        solver.velocity = velocityIK;
-        solver.tolerance = tolerance;
+
         velocityRigid = rigidbody2d.velocity;
         
 
@@ -42,7 +35,7 @@ public class Movement : MonoBehaviour
     void Start()
     {
 
-        solver.GetChain(1).target = testtarget;
+        
        
         velocity = new Vector2(speed, 0.0f);
         velocityFall = new Vector2(0, speedFall);
