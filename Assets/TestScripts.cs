@@ -6,21 +6,27 @@ public class TestScripts : MonoBehaviour
 {
     public Rigidbody2D rigidbody2d;
     public Vector2 centerOfMass;
+    public float recoilPower;
+    Transform recoilArm;
+    Vector3 recoilDirection = Vector3.zero;
 
     // Start is called before the first frame update
     void Start()
     {
-
+        recoilArm = GameObject.FindGameObjectWithTag("RecoilArm").transform;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F1))
+        if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("Pressed F1");
-            rigidbody2d.AddForce(new Vector2(2.0f,0.0f), ForceMode2D.Impulse);
+            recoilDirection.y = recoilPower * -recoilArm.rotation.normalized.z*2;
+            recoilDirection.x = -recoilPower;
+            //Debug.Log("Pressed Fire!");
+            rigidbody2d.AddForce(recoilDirection, ForceMode2D.Impulse);
             centerOfMass = rigidbody2d.centerOfMass;
+            Debug.Log(recoilDirection);
         }
     }
 

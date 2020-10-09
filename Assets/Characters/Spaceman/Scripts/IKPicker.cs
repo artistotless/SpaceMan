@@ -6,7 +6,9 @@ using UnityEngine.Experimental.U2D.IK;
 public class IKPicker : MonoBehaviour
 {
 
-    CCDSolver2D solver;
+    public CCDSolver2D R_arm;
+    public CCDSolver2D L_arm;
+
     public Transform targetObject;
     [Range(0, 100)] int iterations;
     [Range(0, 100.0f)] float velocityIK;
@@ -15,7 +17,8 @@ public class IKPicker : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        solver.GetChain(1).target = targetObject;
+        R_arm.GetChain(1).target = targetObject;
+        //L_arm.GetChain(1).target = targetObject;
     }
 
     // Update is called once per frame
