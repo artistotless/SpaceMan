@@ -11,6 +11,8 @@ public class Movement : MonoBehaviour
     [Range(1, 100.0f)] public float speedFall;
     Vector2 velocity;
 
+    public QuickEffect jumpEffect;
+
     Collider2D[] colliders;
     public Transform groundCheckPoint;
     float groundCheckRadius = 1.0f;
@@ -34,9 +36,6 @@ public class Movement : MonoBehaviour
     }
     void Start()
     {
-
-        
-       
         velocity = new Vector2(speed, 0.0f);
         velocityFall = new Vector2(0, speedFall);
         animator = transform.gameObject.GetComponent<Animator>();
@@ -45,6 +44,7 @@ public class Movement : MonoBehaviour
     }
     void Jump()
     {
+        jumpEffect.Show(transform.position);
         rigidbody2d.AddForceAtPosition(new Vector2(0.0f, 3.0f) * jumpPower, rigidbody2d.position, ForceMode2D.Force);
 
     }
