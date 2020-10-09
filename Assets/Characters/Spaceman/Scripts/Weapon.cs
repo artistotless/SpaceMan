@@ -13,8 +13,15 @@ public class Weapon : MonoBehaviour
 {
     
     public Transform self;
-    public string name;
+    public string name; 
     public float damage;
+    public int ammo;
+    public int reloadTime;
+    public bool isReloading;
+    public float rateFire; // Скорострельность
+    public float recoil; // Отдача оружия.
+
+
     public WeaponType weaponType;
     // ограничения и данные для позиционирования в руке.
 

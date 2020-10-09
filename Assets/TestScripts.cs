@@ -21,7 +21,7 @@ public class TestScripts : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            recoilDirection.y = recoilPower * -recoilArm.rotation.normalized.z*2;
+            recoilDirection.y = recoilPower * (recoilArm.rotation.normalized.z<0?1:-1);
             recoilDirection.x = -recoilPower;
             //Debug.Log("Pressed Fire!");
             rigidbody2d.AddForce(recoilDirection, ForceMode2D.Impulse);

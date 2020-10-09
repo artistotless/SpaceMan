@@ -36,7 +36,7 @@ public class ShootSystem : MonoBehaviour
         direction.y = Input.GetAxis("Mouse Y");
         newPosition.x = Camera.main.ScreenToWorldPoint(Input.mousePosition).x;
         newPosition.y = Camera.main.ScreenToWorldPoint(Input.mousePosition).y;
-        if(aim.position.x-2.0f < transform.position.x)
+        if(aim.position.x-2.5f < transform.position.x)
         {
             ikpicker.R_arm.velocity = 0;
         }
