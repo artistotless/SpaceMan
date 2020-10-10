@@ -13,6 +13,11 @@ public class Weapon : MonoBehaviour
 {
     
     public Transform self;
+    public Vector3 aimPosition;
+    public Vector3 weaponPosition;
+    public Vector3 weaponRotation;
+    public Transform L_arm_IK_point;
+    public MuzzleFlash muzzleFlash; 
     public string name; 
     public float damage;
     public int ammo;
