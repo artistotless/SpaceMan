@@ -60,15 +60,15 @@ public class ShootSystem : MonoBehaviour
             if (aim.position.x - 2.5f < transform.position.x)
             {
                 rootBone.localScale = new Vector3(1, -1, 1);
-                recoilJoint.enabled = false;
-                recoilArm.bodyType = RigidbodyType2D.Kinematic;
+                //recoilJoint.enabled = false;
+                //recoilArm.bodyType = RigidbodyType2D.Kinematic;
             // ikpicker.R_arm.velocity = 0;
         }
             else
             {
 
                 rootBone.localScale = new Vector3(1, 1, 1);
-                recoilJoint.enabled = true;
+                //recoilJoint.enabled = true;
                 recoilArm.bodyType = RigidbodyType2D.Dynamic;
                 ikpicker.R_arm.velocity = 0.5f;
             }
