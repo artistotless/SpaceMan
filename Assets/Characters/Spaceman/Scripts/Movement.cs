@@ -6,32 +6,32 @@ using UnityEngine;
 public class Movement : MonoBehaviour
 
 {
-    [Range(0, 10.0f)]  [SerializeField]  public float speed;
+    public float smooth = 0;
+    [Range(0, 10.0f)] [SerializeField] public float speed;
     [Range(200, 10000.0f)] [SerializeField] public float jumpPower;
-    [Range(1, 100.0f)] public float speedFall;
-    Vector2 velocity;
+    public float jumpBooster;
+    public Vector2 jumpBoosterPower;
+    public Vector2 velocity;
 
     public QuickEffect jumpEffect;
-
-    Collider2D[] colliders;
+    public ParticleSystem jumpParticle;
+    
     public Transform groundCheckPoint;
-    float groundCheckRadius = 1.0f;
     public LayerMask groundLayerMask;
     public bool isground = true;
+    Collider2D[] colliders;
+    float groundCheckRadius = 1.0f;
+    float speedFall;
+
     Animator animator;
-    public Vector2 velocityRigid;
     Rigidbody2D rigidbody2d;
     Vector2 velocityFall;
 
 
     void Update()
     {
-        
+        JumpHolding();
         CheckJumping();
-
-        velocityRigid = rigidbody2d.velocity;
-        
-
 
     }
     void Start()
@@ -40,14 +40,38 @@ public class Movement : MonoBehaviour
         velocityFall = new Vector2(0, speedFall);
         animator = transform.gameObject.GetComponent<Animator>();
         rigidbody2d = transform.gameObject.GetComponent<Rigidbody2D>();
-        
+
     }
     void Jump()
     {
-        jumpEffect.Show(transform.position);
+
+        jumpEffect.Show(
+            new Vector3(transform.position.x + 1.31f, transform.position.y + 1.13705f, 0.0f));
+
+
+
         rigidbody2d.AddForceAtPosition(new Vector2(0.0f, 3.0f) * jumpPower, rigidbody2d.position, ForceMode2D.Force);
 
     }
+    void JumpHolding()
+    {
+
+        if (Input.GetKey(KeyCode.E))
+        {
+            Debug.Log("WOOOOOOOOOW....");
+            jumpBooster -= Time.deltaTime;
+            if (jumpBooster > 0)
+            {
+                speedFall = 1;
+                rigidbody2d.AddForceAtPosition(new Vector2(0.0f, 3.0f) * jumpBoosterPower, rigidbody2d.position, ForceMode2D.Force);
+            }
+           
+            else { jumpBooster = 0; speedFall = 6; }
+
+        }
+    }
+
+
     void CheckJumping()
     {
         if (Input.GetKeyDown(KeyCode.Space))
@@ -59,7 +83,7 @@ public class Movement : MonoBehaviour
 
             }
 
-            
+
         }
     }
 
@@ -67,51 +91,83 @@ public class Movement : MonoBehaviour
     {
 
         colliders = Physics2D.OverlapCircleAll(groundCheckPoint.position, groundCheckRadius, groundLayerMask);
-        if ( colliders.Length > 0) {
+        if (colliders.Length > 0)
+        {
+
             animator.enabled = true;
             isground = true;
+            jumpParticle.Stop();
             animator.SetBool("isGround", true);
             rigidbody2d.gravityScale = 1;
 
-            if (animator.GetBool("isjump")) {animator.SetBool("isjump", false); }
-            
-        } else {
+            if (animator.GetBool("isjump")) { animator.SetBool("isjump", false); }
+
+        }
+        else
+        {
+            if (!jumpParticle.isPlaying)
+            {
+                jumpParticle.Play();
+            }
+
+            // Свободное падение
             animator.enabled = false;
             isground = false;
             animator.SetBool("isGround", false);
-            rigidbody2d.gravityScale += Time.deltaTime*speedFall;
+            rigidbody2d.gravityScale += Time.deltaTime * speedFall;
         }
-           
-        }
-    
- 
+
+    }
+
+
+    void FreezePosition(bool status)
+    {
+        rigidbody2d.constraints = !status ? RigidbodyConstraints2D.None : RigidbodyConstraints2D.FreezePositionX;
+        rigidbody2d.freezeRotation = true;
+    }
+
+
     void Moving()
     {
         float moveInput = Input.GetAxisRaw("Horizontal");
-        animator.SetFloat("move", moveInput);
-        
-        if (moveInput != 0) { 
-        rigidbody2d.constraints = RigidbodyConstraints2D.None;
-        rigidbody2d.freezeRotation = true;
-        }
 
+        animator.SetFloat("move", moveInput);
+
+        if (moveInput != 0 || smooth != 0)
+        {
+            FreezePosition(false);
+
+        }
         else
         {
-            rigidbody2d.constraints = RigidbodyConstraints2D.FreezePositionX;
-            rigidbody2d.freezeRotation = true;
+            FreezePosition(true);
         }
+        if (isground)
+        {
+            smooth = 0;
+            rigidbody2d.MovePosition(rigidbody2d.position + velocity * moveInput * Time.fixedDeltaTime);
+        }
+        else
+        {
+            smooth = moveInput != 0 ? moveInput : smooth;
+            if (moveInput == 0)
+            {
+                if (smooth > 0) { smooth -= Time.deltaTime; }
 
-        rigidbody2d.MovePosition(rigidbody2d.position + velocity * moveInput * Time.fixedDeltaTime);
-        
+                else { smooth += Time.deltaTime; }
+
+            }
+
+            rigidbody2d.AddForce(velocity * smooth * speed);
+        }
     }
-
     void FixedUpdate()
     {
-        velocityRigid = rigidbody2d.velocity;
         isGround();
-        
+
         Moving();
-        
+
 
     }
 }
+
