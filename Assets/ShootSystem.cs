@@ -7,7 +7,7 @@ public class ShootSystem : MonoBehaviour
 {
     public float sensitivity = 2f;
     public Transform aim;
-
+    public Transform rootBone;
     public Weapon[] weapons;
     public Weapon currentWeapon;
     
@@ -17,9 +17,11 @@ public class ShootSystem : MonoBehaviour
 
     Rigidbody2D recoilArm;
     Transform aimDirectionArm;
+    RelativeJoint2D recoilJoint;
 
     private void Start()
     {
+        
         ikpicker = gameObject.GetComponent<IKPicker>();
         newPosition = Vector3.zero;
         direction = new Vector3(aim.position.x, aim.position.y, aim.position.z);
@@ -30,6 +32,7 @@ public class ShootSystem : MonoBehaviour
        
         recoilArm = GameObject.FindGameObjectWithTag("RecoilArm").GetComponent<Rigidbody2D>();
         aimDirectionArm = recoilArm.transform.GetChild(0);
+        recoilJoint = recoilArm.GetComponent<RelativeJoint2D>();
 
     }
 
@@ -53,14 +56,23 @@ public class ShootSystem : MonoBehaviour
         direction.y = Input.GetAxis("Mouse Y");
         newPosition.x = Camera.main.ScreenToWorldPoint(Input.mousePosition).x;
         newPosition.y = Camera.main.ScreenToWorldPoint(Input.mousePosition).y;
-        if(aim.position.x-2.5f < transform.position.x)
-        {
-            ikpicker.R_arm.velocity = 0;
+
+            if (aim.position.x - 2.5f < transform.position.x)
+            {
+                rootBone.localScale = new Vector3(1, -1, 1);
+                recoilJoint.enabled = false;
+                recoilArm.bodyType = RigidbodyType2D.Kinematic;
+            // ikpicker.R_arm.velocity = 0;
         }
-        else
-        {
-            ikpicker.R_arm.velocity = 0.5f;
-        }
+            else
+            {
+
+                rootBone.localScale = new Vector3(1, 1, 1);
+                recoilJoint.enabled = true;
+                recoilArm.bodyType = RigidbodyType2D.Dynamic;
+                ikpicker.R_arm.velocity = 0.5f;
+            }
+        
         aim.position = newPosition ;
         // aim.position += direction * Time.deltaTime * sensitivity;
     }

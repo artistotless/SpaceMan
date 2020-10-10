@@ -62,6 +62,10 @@ public class Movement : MonoBehaviour
             jumpBooster -= Time.deltaTime;
             if (jumpBooster > 0)
             {
+                if (!jumpParticle.isPlaying)
+                {
+                    jumpParticle.Play();
+                }
                 speedFall = 1;
                 rigidbody2d.AddForceAtPosition(new Vector2(0.0f, 3.0f) * jumpBoosterPower, rigidbody2d.position, ForceMode2D.Force);
             }
@@ -105,10 +109,7 @@ public class Movement : MonoBehaviour
         }
         else
         {
-            if (!jumpParticle.isPlaying)
-            {
-                jumpParticle.Play();
-            }
+           
 
             // Свободное падение
             animator.enabled = false;
