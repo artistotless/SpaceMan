@@ -17,7 +17,7 @@ public class IKPicker : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        R_arm.GetChain(1).target = targetObject;
+        
         //L_arm.GetChain(1).target = targetObject;
     }
 

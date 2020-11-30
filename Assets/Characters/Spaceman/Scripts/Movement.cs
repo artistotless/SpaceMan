@@ -1,42 +1,48 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 public class Movement : MonoBehaviour
 
 {
-    public float smooth = 0;
-    [Range(0, 10.0f)] [SerializeField] public float speed;
-    [Range(200, 10000.0f)] [SerializeField] public float jumpPower;
-    public float jumpBooster;
-    public Vector2 jumpBoosterPower;
-    public Vector2 velocity;
+
+    internal double distance;
+    [Range(0, 10.0f)] [SerializeField] public float speedWalk, speedFly;
+    [Range(200, 10000.0f)] [SerializeField] public float jumpVelocity;
+    public float BoosterCount;
+    public Vector2 BoosterVelocity;
+    Vector2 velocity;
 
     public QuickEffect jumpEffect;
-    public ParticleSystem jumpParticle;
-    
+    public ParticleSystem boostParticle;
+
     public Transform groundCheckPoint;
     public LayerMask groundLayerMask;
     public bool isground = true;
     Collider2D[] colliders;
     float groundCheckRadius = 1.0f;
-    float speedFall;
+    public float speedFall;
+    float smooth = 0;
 
     Animator animator;
     Rigidbody2D rigidbody2d;
     Vector2 velocityFall;
+    ShootSystem ssystem;
 
 
     void Update()
     {
         JumpHolding();
         CheckJumping();
+        if (Input.GetKeyDown(KeyCode.F1)) ssystem.enabled = ssystem.enabled ? false : true;
 
     }
     void Start()
     {
-        velocity = new Vector2(speed, 0.0f);
+        ssystem = GetComponent<ShootSystem>();
+        velocity = new Vector2(speedWalk, 0.0f);
         velocityFall = new Vector2(0, speedFall);
         animator = transform.gameObject.GetComponent<Animator>();
         rigidbody2d = transform.gameObject.GetComponent<Rigidbody2D>();
@@ -50,7 +56,7 @@ public class Movement : MonoBehaviour
 
 
 
-        rigidbody2d.AddForceAtPosition(new Vector2(0.0f, 3.0f) * jumpPower, rigidbody2d.position, ForceMode2D.Force);
+        rigidbody2d.AddForceAtPosition(new Vector2(0.0f, 3.0f) * jumpVelocity, rigidbody2d.position, ForceMode2D.Force);
 
     }
     void JumpHolding()
@@ -59,18 +65,21 @@ public class Movement : MonoBehaviour
         if (Input.GetKey(KeyCode.E))
         {
             Debug.Log("WOOOOOOOOOW....");
-            jumpBooster -= Time.deltaTime;
-            if (jumpBooster > 0)
+            BoosterCount -= Time.deltaTime;
+            if (BoosterCount > 0)
             {
-                if (!jumpParticle.isPlaying)
+                if (!boostParticle.isPlaying)
                 {
-                    jumpParticle.Play();
+                    boostParticle.Play();
                 }
                 speedFall = 1;
-                rigidbody2d.AddForceAtPosition(new Vector2(0.0f, 3.0f) * jumpBoosterPower, rigidbody2d.position, ForceMode2D.Force);
+                FreezePosition(false);
+                rigidbody2d.AddForceAtPosition(new Vector2(0.0f, 2.0f) * BoosterVelocity, rigidbody2d.position, ForceMode2D.Force);
+                //rigidbody2d.AddForceAtPosition(new Vector2(ssystem.isFlipped ? -2.0f : 2.0f, 2.0f) * BoosterVelocity, rigidbody2d.position, ForceMode2D.Force);
+
             }
-           
-            else { jumpBooster = 0; speedFall = 6; }
+
+            else { BoosterCount = 0; speedFall = 6; }
 
         }
     }
@@ -100,7 +109,7 @@ public class Movement : MonoBehaviour
 
             animator.enabled = true;
             isground = true;
-            jumpParticle.Stop();
+            boostParticle.Stop();
             animator.SetBool("isGround", true);
             rigidbody2d.gravityScale = 1;
 
@@ -109,7 +118,7 @@ public class Movement : MonoBehaviour
         }
         else
         {
-           
+
 
             // Свободное падение
             animator.enabled = false;
@@ -159,7 +168,7 @@ public class Movement : MonoBehaviour
 
             }
 
-            rigidbody2d.AddForce(velocity * smooth * speed);
+            rigidbody2d.AddForce(velocity * smooth * speedFly);
         }
     }
     void FixedUpdate()
@@ -167,6 +176,9 @@ public class Movement : MonoBehaviour
         isGround();
 
         Moving();
+
+
+
 
 
     }
